@@ -1,3 +1,11 @@
+let playerScore = 0;
+let computerScore = 0;
+
+const GAMES_TO_WIN = 5;
+const TIE = "tie";
+const WIN = "win";
+const LOSE = "lose";
+
 function computerPlay(){
 	let signToPlay = Math.floor(Math.random() * 3);
 	switch(signToPlay){
@@ -15,117 +23,84 @@ function computerPlay(){
 	}
 }
 
-function capitalize(str){
-	let firstChar = str.slice(0,1);
-	let rest = str.slice(1);
-	return firstChar.toUpperCase() + rest.toLowerCase();
-}
+
 
 function fight(playerSelection, computerSelection){
-	let tie = "tie";
-	let win = "player";
-	let lose = "computer";
 
 	switch(playerSelection){
 		case "Rock":
 			switch(computerSelection){
 				case "Rock":
-					return tie;
+					return TIE;
 					break;
 				case "Paper":
-					return lose;
+					return LOSE;
 					break;
 				case "Scissors":
-					return win;
+					return WIN;
 					break;
 			}
 		case "Paper":
 			switch(computerSelection){
 				case "Rock":
-					return win;
+					return WIN;
 					break;
 				case "Paper":
-					return tie;
+					return TIE;
 					break;
 				case "Scissors":
-					return lose;
+					return LOSE;
 					break;
 			}
 		case "Scissors":
 			switch(computerSelection){
 				case "Rock":
-					return lose;
+					return LOSE;
 					break;
 				case "Paper":
-					return win;
+					return WIN;
 					break;
 				case "Scissors":
-					return tie;
+					return TIE;
 					break;
 			}
 	}
 }
 
-function singleRound(playerSelection, computerSelection){
-	let formattedPlayerSelection = capitalize(playerSelection.trim());
-
-	return fight(formattedPlayerSelection, computerSelection)	
-}
-
-function promptPlayer(){
-	let playerSelection = prompt("Rock, Paper, or Scissors?");
-	let formattedPlayerSelection = capitalize(playerSelection.trim());
-	switch (formattedPlayerSelection){
-		case "Rock":
-		case "Paper":
-		case "Scissors":
-			return formattedPlayerSelection;
+function singleRound(e){
+	let computerSelection = computerPlay();
+	let playerSelection = this.id;
+	switch (fight(playerSelection,computerSelection)){
+		case WIN:
+				playerScore++;
+				updateResults();
 			break;
-		default:
-			if (confirm("You entered something besides Rock, Paper, or Scissors.  Do you want to keep playing? \n Press 'OK' to continue, or 'Cancel' to quit.")) {
-					return promptPlayer();
-			}else{
-				return false;
-			}
+		case LOSE:
+				computerScore++;
+				updateResults();
 			break;
-
+		case TIE:
+			break;
 	}
 }
 
-function game(){
-	let playerScore = 0;
-	let computerScore = 0;
-	let i;
-	let numberOfGames = 5;
-	let result, playerSelection, computerSelection;
 
-	for(i = 0; i<numberOfGames; i++){
-		playerSelection = promptPlayer();
-		if (!playerSelection){
-			return "You quit!";
-		}
-		computerSelection = computerPlay();
-		result = singleRound(playerSelection, computerSelection);
-		if (result === "player"){
-			playerScore++;
-		} else if (result === "computer"){
-			computerScore++;
-		}
-	}
 
-	if (playerScore > computerScore) {
-		return "You won!";
-	} else if (computerScore > playerScore) {
-		return "You lost!";
-	} else {
-		return "You tied!";
-	}
+function updateResults(){
+	player.textContent = `player: ${playerScore}`;
+	computer.textContent = `computer: ${computerScore}`;
+	if (playerScore >= GAMES_TO_WIN) winner.textContent = " You win!";
+	if (computerScore >= GAMES_TO_WIN) winner.textContent = " You lose!";
 
 }
 
+const buttons = document.querySelectorAll(".action");
+const player = document.querySelector("#player");
+const computer = document.querySelector("#computer");
+const winner = document.querySelector("#winner");
 
-
-
+buttons.forEach(button => button.addEventListener("click",singleRound));
+updateResults();
 
 
 
